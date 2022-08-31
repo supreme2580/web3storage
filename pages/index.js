@@ -3,15 +3,13 @@ import { Web3Storage } from "web3.storage";
 
 const Home = () => {
 
-  const [file, setFile] = useState("")
-  const [fileType, setFileType] = useState(null)
+  const [file, setFile] = useState(null)
   const [fileName, setFileName] = useState("")
   const [cid, setCid] = useState("")
 
   const getFile = (e) => {
     const reader = new FileReader()
     reader.readAsDataURL(e.target.files[0])
-    setFileType(e.target.files[0].type)
     setFileName(e.target.files[0].name)
     setFile(e.target.files[0])
   }
