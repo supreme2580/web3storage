@@ -1,45 +1,47 @@
+import { useState, useEffect } from "react";
 import { Web3Storage } from "web3.storage"
+import Link from "next/link"
 
 const Home = () => {
 
-  function getAccessToken () {
-    return process.env.WEB3STORAGE_TOKEN
+  const [file, setFile] = useState(null)
+  const [fileType, setFileType] = useState(null)
+  const [fileName, setFileName] = useState(null)
+  const [cid, setCid] = useState(null)
+
+  const getFile = (e) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(e.target.files[0])
+    setFileType(e.target.files[0].type)
+    setFileName(e.target.files[0].name)
+    setFile(e.target.files[0])
   }
 
- const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-});
-
-  async function makeFileObjects () {
-    // You can create File objects from a Blob of binary data
-    // see: https://developer.mozilla.org/en-US/docs/Web/API/Blob
-    // Here we're just storing a JSON object, but you can store images,
-    // audio, or whatever you want!
-    const file = document.getElementById("file")?.files[0]
-    const data = await toBase64(file)
-    const obj = { data: data }
-    const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' })
-  
-    const files = [
-      new File(['contents-of-file-1'], 'plain-utf8.txt'),
-      new File([blob], 'data.json')
-    ]
+  function makeFile() {
+    const files = [new File([file], fileName)]
+    console.log(file)
     return files
   }
 
-  const storeFiles = async () => {
-    const client = new Web3Storage({ token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFkMTREQ2VFNkQ3M0JEQjQwQjYwZDgwMkI3RWE1Qzg3NzZmRGQxNGQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NjA4OTQ0ODQ2NTIsIm5hbWUiOiJXRUIzUlNWUCJ9.LzMmEbuXJNkc9MfEK1lmzcHMN6BlsqPKiu27C1Z9qRo" })
-    const cid = await client.put(await makeFileObjects())
-    console.log('stored files with cid:', cid)
+  const store = async () => {
+    const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN })
+    const cid = await client.put(makeFile())
+    setCid(cid)
   }
 
   return (
     <div>
-      <input type="file" id="file" />
-      <button id="save" onClick={storeFiles}>Save File to ipfs</button>
+      <input type="file" onChange={getFile} />
+      <button onClick={store}>Save File to ipfs</button>
+      <div id="url"></div>
+      {
+        useEffect (() => {
+          const link = document.createElement("a")
+          link.href = `https://${cid}.ipfs.w3s.link/${fileName}`
+          link.innerHTML = "Click me to view file"
+          cid != null ? document.getElementById("url").appendChild(link) : ""
+        }, [cid])
+      }
     </div>
   )
 }
