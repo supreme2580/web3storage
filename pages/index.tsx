@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
-import { Web3Storage } from "web3.storage"
-import Link from "next/link"
+import { useEffect, useState } from "react";
+import { Web3Storage } from "web3.storage";
 
 const Home = () => {
 
-  const [file, setFile] = useState(null)
+  const [file, setFile] = useState("")
   const [fileType, setFileType] = useState(null)
-  const [fileName, setFileName] = useState(null)
-  const [cid, setCid] = useState(null)
+  const [fileName, setFileName] = useState("")
+  const [cid, setCid] = useState("")
 
   const getFile = (e) => {
     const reader = new FileReader()
@@ -39,7 +38,7 @@ const Home = () => {
           const link = document.createElement("a")
           link.href = `https://${cid}.ipfs.w3s.link/${fileName}`
           link.innerHTML = "Click me to view file"
-          cid != null ? document.getElementById("url").appendChild(link) : ""
+          cid != null ? document.getElementById("url")?.appendChild(link) : ""
         }, [cid])
       }
     </div>
