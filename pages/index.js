@@ -24,6 +24,7 @@ const Home = () => {
     const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN })
     const cid = await client.put(makeFile())
     setCid(cid)
+    alert("The file has been stored to ", cid)
   }
 
   return (
